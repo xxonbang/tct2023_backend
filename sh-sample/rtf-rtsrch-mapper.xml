@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shl.app.cus.rtf.mapper.RtSrchMapper">
+
+
+	<select id="selectRtSrchList"  parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	
+		SELECT A.RT_NUM,
+               A.PU_BRND_NUM,
+               DBO.FNC_SAL_BRNDNM(A.PU_BRND_NUM) AS PU_BRND_NM,
+              <!--  A.PU_BRND_ORG_NUM,
+               DBO.FNC_COM_ORGNM(A.PU_BRND_ORG_NUM) AS PU_BRND_ORG_NM, -->
+               A.DLVR_BRND_NUM,
+               DBO.FNC_SAL_BRNDNM(A.DLVR_BRND_NUM) AS DLVR_BRND_NM,
+               <!-- A.DLVR_BRND_ORG_NUM,
+               DBO.FNC_COM_ORGNM(A.DLVR_BRND_ORG_NUM) AS DLVR_BRND_ORG_NM, -->
+             
+             CASE WHEN A.INT_WBL_PCH_NUM IS NOT NULL 
+             	  THEN A.INT_WBL_PCH_NUM
+             	  ELSE A.OUT_WBL_PCH_NUM
+             	  END AS OUT_WBL_PCH_NUM,
+             A.PU_BRND_ORG_NUM,
+			 DBO.FNC_COM_ORGNM(A.PU_BRND_ORG_NUM) AS PU_BRND_ORG_NM,
+			 A.PU_BRND_ORG_DEPT_NM,
+		     A.DLVR_BRND_ORG_NUM,
+			 DBO.FNC_COM_ORGNM(A.DLVR_BRND_ORG_NUM) AS DLVR_BRND_ORG_NM,
+             
+               A.CGO_ITM_NM,
+               A.RGST_DTIM,
+               <!-- (SELECT RGST_DTIM
+                FROM TB_COM_ORG
+                WHERE ORG_NUM = A.DLVR_BRND_ORG_NUM) AS RGST_DTIM, -->
+               A.PU_IN_DTIM, 
+               A.CTGRZ_OUT_DTIM,
+               [dbo].FNC_COM_CDNM(A.RT_TRANS_STTS) AS TRANS_STTS, 
+               B.WBL_PCH_CATE_CD,
+               A.DLVR_BRND_ORG_NUM
+		              
+		FROM 
+		(SELECT * FROM TB_WBL_RT_WBL_MST
+		 WHERE 1=1 
+		 AND DLT_YN = 'N'
+		 AND PU_BRND_NUM = #{PU_BRND_NUM}
+		 AND RT_NUM = CONVERT(VARCHAR, #{RT_NUM})
+		 <if test='BRND_ORG_NUM != null and !BRND_ORG_NUM.equals("")'>
+		 	<!-- AND DLVR_BRND_ORG_NUM =  #{BRND_ORG_NUM} -->
+		 	AND (PU_BRND_ORG_NUM = #{BRND_ORG_NUM} OR DLVR_BRND_ORG_NUM = #{BRND_ORG_NUM})
+		 </if>
+		 AND DLVR_BRND_ORG_NUM IS NOT NULL
+		 ) A
+		
+		LEFT OUTER JOIN TB_WBL_PCH_RT_MST B
+		
+		ON 1 = 1
+		AND (A.PU_BRND_NUM = #{PU_BRND_NUM} OR A.DLVR_BRND_NUM = #{PU_BRND_NUM})
+		<!-- AND (A.PU_BRND_ORG_NUM = #{BRND_ORG_NUM} OR A.DLVR_BRND_ORG_NUM = #{BRND_ORG_NUM}) -->
+		<if test='BRND_ORG_NUM != null and !BRND_ORG_NUM.equals("")'>
+			<!-- AND A.DLVR_BRND_ORG_NUM = #{BRND_ORG_NUM} -->
+			AND (A.PU_BRND_ORG_NUM = #{BRND_ORG_NUM} OR A.DLVR_BRND_ORG_NUM = #{BRND_ORG_NUM})
+		</if>
+		AND (A.OUT_WBL_PCH_NUM = B.WBL_PCH_NUM 
+		 OR
+				      A.INT_WBL_PCH_NUM = B.WBL_PCH_NUM)
+		<!-- AND A.RT_NUM = B.RT_NUM -->
+		
+		AND A.RT_NUM = B.RT_NUM 
+	</select>
+
+</mapper>
+
+
+<!-- 		DECLARE @행낭구좌 varchar(8)
+		SET @행낭구좌 = 'C0410002'
+	
+		SELECT A.RT_NUM,
+               A.PU_BRND_NUM,
+               DBO.FNC_SAL_BRNDNM(A.PU_BRND_NUM) AS PU_BRND_NM,
+               A.PU_BRND_ORG_NUM,
+               DBO.FNC_COM_ORGNM(A.PU_BRND_ORG_NUM) AS PU_BRND_ORG_NM,
+               A.DLVR_BRND_NUM,
+               DBO.FNC_SAL_BRNDNM(A.DLVR_BRND_NUM) AS DLVR_BRND_NM,
+               A.DLVR_BRND_ORG_NUM,
+               DBO.FNC_COM_ORGNM(A.DLVR_BRND_ORG_NUM) AS DLVR_BRND_ORG_NM,
+               A.OUT_WBL_PCH_NUM,
+               A.CGO_ITM_NM,
+               A.RGST_DTIM,
+               A.PU_IN_DTIM, 
+               A.CTGRZ_OUT_DTIM,
+               [dbo].FNC_COM_CDNM(B.RT_TRANS_STTS) AS TRANS_STTS,
+               @행낭구좌 AS WBL_PCH_CATE_CD
+		              
+		FROM 
+		(SELECT * FROM TB_WBL_RT_WBL_MST
+		 WHERE 1=1 
+		 AND PU_BRND_NUM = #{PU_BRND_NUM}
+		 AND RT_NUM = #{RT_NUM}) A
+		
+		LEFT OUTER JOIN TB_WBL_PCH_RT_MST B
+		
+		ON 1 = 1
+		AND A.OUT_WBL_PCH_NUM = B.WBL_PCH_NUM 
+		AND A.RT_NUM = B.RT_NUM; -->
