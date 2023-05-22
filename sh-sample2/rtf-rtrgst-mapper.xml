@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shl.app.cus.rtf.mapper.RtRgstMapper">
+
+    <!-- Result Object -->
+    <resultMap id="RtRgstVO" type="com.shl.app.cus.rtf.model.RtRgstVO">
+		<result property="RT_NUM"				column="RT_NUM" />
+		<result property="RGST_RT_KEY_NUM" 		column="RGST_RT_KEY_NUM" />
+		<result property="OPRT_DT" 				column="OPRT_DT" />
+		<result property="PRNT_YN" 				column="PRNT_YN" />
+		<result property="PU_BRND_NUM" 			column="PU_BRND_NUM" />
+		<result property="PU_BRND_NM" 			column="PU_BRND_NM" />
+		<result property="PU_BRND_ORG_NUM" 		column="PU_BRND_ORG_NUM" />
+		<result property="PU_CSTR_ORG_NUM" 		column="PU_CSTR_ORG_NUM" />
+		<result property="PU_BRND_ORG_NM" 		column="PU_BRND_ORG_NM" />
+		<result property="PU_BRND_ORG_CD"		column="PU_BRND_ORG_CD" />
+		<result property="PU_MAIL_NUM" 			column="PU_MAIL_NUM" />
+		<result property="PU_ADR" 				column="PU_ADR" />
+		<result property="PU_ADR_DETL" 			column="PU_ADR_DETL" />
+		<result property="PU_PON_NUM" 			column="PU_PON_NUM" />
+		<result property="PU_ORG_NUM" 			column="PU_ORG_NUM" />
+		<result property="PU_ORG_NM" 			column="PU_ORG_NM" />
+		<result property="DLVR_BRND_NUM"		column="DLVR_BRND_NUM" />
+		<result property="DLVR_BRND_NM"			column="DLVR_BRND_NM" />
+		<result property="DLVR_BRND_ORG_NUM"	column="DLVR_BRND_ORG_NUM" />
+		<result property="DLVR_CSTR_ORG_NUM"	column="DLVR_CSTR_ORG_NUM" />
+		<result property="DLVR_BRND_ORG_NM"		column="DLVR_BRND_ORG_NM" />
+		<result property="DLVR_BRND_ORG_CD"		column="DLVR_BRND_ORG_CD" />
+		<result property="DLVR_MAIL_NUM" 		column="DLVR_MAIL_NUM" />
+		<result property="DLVR_ADR" 			column="DLVR_ADR" />
+		<result property="DLVR_ADR_DETL" 		column="DLVR_ADR_DETL" />
+		<result property="DLVR_PON_NUM" 		column="DLVR_PON_NUM" />
+		<result property="DLVR_ORG_NUM" 		column="DLVR_ORG_NUM" />
+		<result property="DLVR_ORG_NM" 			column="DLVR_ORG_NM" />
+		<result property="ACPTR_NM" 			column="ACPTR_NM" />
+		<result property="ITM_CD" 				column="ITM_CD" />
+		<result property="ITM_NM" 				column="ITM_NM" />
+		<result property="CGO_ITM_NM" 			column="CGO_ITM_NM" />
+		<result property="CGO_ITM_CATE_NM" 		column="CGO_ITM_CATE_NM" />
+		<result property="TRNSMTR_NM" 			column="TRNSMTR_NM" />
+		<result property="RPR_YN" 				column="RPR_YN" />
+		<result property="LCTN" 				column="LCTN" />
+
+		<result property="RT_TRANS_STTS" 		column="RT_TRANS_STTS"/>
+		<result property="AS_BRND_ORG_NUM" 		column="AS_BRND_ORG_NUM"/>
+		<result property="CGO_ITM_LOT1_NM" 		column="CGO_ITM_LOT1_NM" />
+		<result property="CGO_ITM_LOT2_NM" 		column="CGO_ITM_LOT2_NM" />
+		<result property="CGO_ITM_QTY" 			column="CGO_ITM_QTY" />
+		<result property="PU_BRND_ORG_DEPT_NM" 	column="PU_BRND_ORG_DEPT_NM" />
+		<result property="DLVR_BRND_ORG_DEPT_NM" column="DLVR_BRND_ORG_DEPT_NM" />
+    </resultMap>
+
+	<resultMap id="ComboCodeVO" type="com.shl.app.utils.model.ComboCodeVO">
+		<result property="CODE" 				column="CODE" />
+		<result property="NAME" 				column="NAME" />
+		<result property="CD_GROUP" 			column="CD_GROUP" />
+    </resultMap>
+
+    <!-- 해당 브랜드의 대표고객코드 조회 -->
+    <select id="selectRepzntCstrCd" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT REPZNT_CSTR_CD
+		  FROM TB_SAL_BRND
+		 WHERE BRND_NUM = #{BRND_NUM}
+    </select>
+
+	<!-- 브랜드번호 조회 -->
+    <select id="selectBrnd" parameterType="java.lang.String" resultMap="ComboCodeVO">
+		SELECT BRND_NUM AS CODE, BRND_NM AS NAME
+		  FROM TB_SAL_BRND
+		 WHERE BRND_NUM = #{BRND_NUM}
+		   AND DLT_YN = 'N'
+    </select>
+
+    <!-- AS매장 조회 -->
+    <select id="selectAsOrgList" parameterType="java.lang.String" resultMap="ComboCodeVO">
+		SELECT ORG_NUM    CODE
+		     , KRN_ORG_NM NAME
+		     , CSTR_ORG_NUM     CD_GROUP
+		FROM TB_COM_ORG
+		WHERE BRND_NUM =  #{BRND_NUM}
+		  AND CSTR_ORG_CTGRZ_CD = 'C1120002'
+		  AND CSTR_ORG_NUM IS NOT NULL
+		  AND  (CLZING_DT IS NULL OR (CLZING_DT IS NOT NULL AND CLZING_DT >= CONVERT(CHAR(8), GETDATE(), 112)))
+    </select>
+
+	<!-- 대표고객코드로 브랜드번호 목록 조회 -->
+    <select id="selectBrndList" parameterType="java.lang.String" resultMap="ComboCodeVO">
+		SELECT BRND_NUM AS CODE, BRND_NM AS NAME
+		  FROM TB_SAL_BRND
+		 WHERE REPZNT_CSTR_CD = #{REPZNT_CSTR_CD}
+		   AND DLT_YN = 'N'
+    </select>
+
+    <!-- 해당 고객의 RT번호 발본 구조 조회 -->
+    <select id="selectExistRtNumStrBs" parameterType="java.util.HashMap" resultType="java.lang.String">
+		SELECT SEQ_NM
+		  FROM TB_WBL_PLCT_RT_STR_BS
+		 WHERE BRND_NUM = #{PU_BRND_NUM}
+		   AND RPR_YN = #{RPR_YN}
+    </select>
+
+    <!-- 해당 고객의 발본 구조로 RT번호 생성 -->
+    <select id="selectStrBsRtNum" parameterType="java.util.HashMap" resultType="java.lang.String">
+		SELECT ISNULL(RT_PREFIX, '') + ISNULL(BRND_CD, '')
+				+ CASE WHEN ORG_CATE = '1'
+					   THEN (SELECT ORG_CD FROM TB_COM_ORG WHERE ORG_NUM = #{PU_BRND_ORG_NUM})
+					   WHEN ORG_CATE = '2'
+					   THEN #{PU_BRND_ORG_NUM}
+					   ELSE ''
+				  END
+				+ FORMAT(NEXT VALUE FOR ${SEQ_NM}, FRM_CHR) AS RT_NUM
+		  FROM TB_WBL_PLCT_RT_STR_BS
+		 WHERE BRND_NUM = #{PU_BRND_NUM}
+		   AND RPR_YN = #{RPR_YN}
+    </select>
+
+    <!-- RT번호 시퀀스 object 조회 -->
+    <select id="selectExistObject" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT NAME
+		  FROM SYS.objects
+		 WHERE TYPE = 'SO'
+		   AND NAME = 'SEQ' + 'RT' + #{PU_BRND_NUM}
+    </select>
+
+    <!-- RT번호 시퀀스 이름 -->
+    <select id="selectRtNumSeqNm" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 'SEQ' + 'RT' + #{PU_BRND_NUM} AS SEQ_NM
+    </select>
+
+    <!-- RT번호 시퀀스 생성 -->
+    <insert id="createRtNumSeq" parameterType="java.util.HashMap">
+    	CREATE SEQUENCE ${SEQ_NM} AS BIGINT
+    	START WITH 1
+ 		INCREMENT BY 1
+ 		MINVALUE 1
+		MAXVALUE 99999999
+ 		CYCLE
+    </insert>
+
+	<!-- RT번호 생성 -->
+    <select id="selectRtNum" parameterType="java.util.HashMap" resultType="java.lang.String">
+		SELECT WBL_PCH_PREFIX
+				+ (CASE WHEN BRND_YN = 'Y' THEN #{PU_BRND_NUM} ELSE '' END)
+				+ FORMAT(NEXT VALUE FOR ${SEQ_NM}, '00000000') AS RT_NUM
+		  FROM TB_WBL_PLCT_STR_BS
+		 WHERE RT_YN ='Y'
+    </select>
+
+    <!-- RT번호 중복 체크 조회 -->
+    <select id="selectExistRtNum" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT RT_NUM
+		  FROM TB_WBL_RT_WBL_MST
+		 WHERE RT_NUM = #{RT_NUM}
+    </select>
+
+	<!-- 발행키 체크 조회 -->
+    <select id="selectExistRgstRtKeyNum" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT RGST_RT_KEY_NUM
+		  FROM TB_WBL_RT_WBL_MST
+		 WHERE RT_NUM = #{RT_NUM}
+    </select>
+
+	<!-- 발행키 생성 -->
+    <select id="selectRgstRtKeyNum" resultType="java.lang.String">
+		SELECT CONVERT(CHAR(8), GETDATE(), 112) + 'P'
+				+ FORMAT(NEXT VALUE FOR SEQ_WBL_RGST_NUM, '000000') AS RGST_RT_KEY_NUM
+    </select>
+
+    <!-- 조회 -->
+	<!-- RT등록자료 조회 -->
+    <select id="selectRtList" parameterType="java.util.HashMap" resultMap="RtRgstVO">
+    	SELECT RT_NUM													/* RT번호 */
+	 		 , RGST_RT_KEY_NUM											/* 발행키번호 */
+	 		 , OPRT_DT													/* 등록일자 */
+	 		 , RT_TRANS_STTS											/* RT상태 */
+	 		 , PRNT_YN													/* 발행여부 */
+	 		 , PU_BRND_NUM												/* 발신고객 */
+	 		 , DBO.FNC_SAL_BRNDNM(PU_BRND_NUM) AS PU_BRND_NM			/* 발신고객명*/
+	 		 , PU_BRND_ORG_NUM											/* 발신지점*/
+	 		 , DBO.FNC_COM_ORGNM(PU_BRND_ORG_NUM) AS PU_BRND_ORG_NM		/* 발신지점명 */
+	 		 , DBO.FNC_COM_ORGCD(PU_BRND_ORG_NUM) AS PU_BRND_ORG_CD
+	 		 , DBO.FNC_COM_CSTRORGNUM(PU_BRND_ORG_NUM) AS PU_CSTR_ORG_NUM
+	 		 , PU_ORG_NUM												/* 집하조직번호 */
+	 		 , DBO.FNC_COM_ORGNM(PU_ORG_NUM) AS PU_ORG_NM				/* 집하조직명 */
+	 		 , DLVR_BRND_NUM											/* 수신고객*/
+	 		 , DBO.FNC_SAL_BRNDNM(DLVR_BRND_NUM) AS DLVR_BRND_NM		/* 수신고객명*/
+	 		 , DLVR_BRND_ORG_NUM										/* 수신지점 */
+	 		 , DBO.FNC_COM_ORGNM(DLVR_BRND_ORG_NUM) AS DLVR_BRND_ORG_NM	/* 수신지점명*/
+	 		 , DBO.FNC_COM_ORGCD(DLVR_BRND_ORG_NUM) AS DLVR_BRND_ORG_CD
+	 		 , DBO.FNC_COM_CSTRORGNUM(DLVR_BRND_ORG_NUM) AS DLVR_CSTR_ORG_NUM
+	 		 , DLVR_ORG_NUM												/* 배송조직번호 */
+	 		 , DBO.FNC_COM_ORGNM(DLVR_ORG_NUM) AS DLVR_ORG_NM			/* 배송조직명 */
+	 		 , ACPTR_NM													/* 인수자명 */
+	 		 , ITM_CD													/*등록구분*//* 품목코드 */
+	 		 , DBO.FNC_STO_ITMNM(ITM_CD) AS ITM_NM 						/* 품목명칭 */
+	 		 , CGO_ITM_NM												/*[STYLE/품목]*//* 화물명칭 */
+	 		 , CGO_ITM_CATE_NM											/*[비고]*//* 화물상세구분 */
+	 		 , TRNSMTR_NM												/* 발신자명 */
+	 		 , CASE WHEN RPR_YN = 'Y' THEN 'Y' ELSE 'N' END AS RPR_YN	/* 수선여부 */
+
+			 , CGO_ITM_LOT1_NM	 /*[칼라]*/
+			 , CGO_ITM_LOT2_NM	 /*[사이즈]*/
+			 , 1 CGO_ITM_QTY		 /*[수량]*/
+
+	 		 , PU_BRND_ORG_DEPT_NM  /*[발신부서]*/
+	 		 , DLVR_BRND_ORG_DEPT_NM/*[수신부서]*/
+	 		 , CASE WHEN RPR_YN = 'Y' THEN DLVR_BRND_ORG_NUM ELSE '' END AS_BRND_ORG_NUM
+		  FROM TB_WBL_RT_WBL_MST
+	     WHERE 1=1
+	       AND DLVR_BRND_ORG_NUM <![CDATA[<>]]> ''--IS NOT NULL
+	     <if test='PU_BRND_NUM != null and !PU_BRND_NUM.equals("")'>
+		   AND PU_BRND_NUM = #{PU_BRND_NUM}
+		   AND DLVR_BRND_NUM = #{PU_BRND_NUM}
+		 </if>
+	     <if test='PU_BRND_ORG_NUM != null and !PU_BRND_ORG_NUM.equals("")'>
+		   AND PU_BRND_ORG_NUM = #{PU_BRND_ORG_NUM}
+		 </if>
+	     <if test='OPRT_DT != null and !OPRT_DT.equals("")'>
+		   AND OPRT_DT = #{OPRT_DT}
+		 </if>
+		 <if test='RT_NUM != null and !RT_NUM.equals("")'>
+		   AND RT_NUM = #{RT_NUM}
+		 </if>
+		   AND RGST_EMP_NUM = #{SES_EMP_NUM}
+		   AND DLT_YN = 'N'
+		UNION ALL
+		SELECT RT_NUM													/* RT번호 */
+	 		 , RGST_RT_KEY_NUM											/* 발행키번호 */
+	 		 , OPRT_DT													/* 등록일자 */
+	 		 , RT_TRANS_STTS											/* RT상태 */
+	 		 , PRNT_YN													/* 발행여부 */
+	 		 , PU_BRND_NUM												/* 발신고객 */
+	 		 , DBO.FNC_SAL_BRNDNM(PU_BRND_NUM) AS PU_BRND_NM			/* 발신고객명*/
+	 		 , PU_BRND_ORG_NUM											/* 발신지점*/
+	 		 , DBO.FNC_COM_ORGNM(PU_BRND_ORG_NUM) AS PU_BRND_ORG_NM		/* 발신지점명 */
+	 		 , DBO.FNC_COM_ORGCD(PU_BRND_ORG_NUM) AS PU_BRND_ORG_CD
+	 		 , DBO.FNC_COM_CSTRORGNUM(PU_BRND_ORG_NUM) AS PU_CSTR_ORG_NUM
+	 		 , PU_ORG_NUM												/* 집하조직번호 */
+	 		 , DBO.FNC_COM_ORGNM(PU_ORG_NUM) AS PU_ORG_NM				/* 집하조직명 */
+	 		 , DLVR_BRND_NUM											/* 수신고객*/
+	 		 , DBO.FNC_SAL_BRNDNM(DLVR_BRND_NUM) AS DLVR_BRND_NM		/* 수신고객명*/
+	 		 , DLVR_BRND_ORG_NUM										/* 수신지점 */
+	 		 , DBO.FNC_COM_ORGNM(DLVR_BRND_ORG_NUM) AS DLVR_BRND_ORG_NM	/* 수신지점명*/
+	 		 , DBO.FNC_COM_ORGCD(DLVR_BRND_ORG_NUM) AS DLVR_BRND_ORG_CD
+	 		 , DBO.FNC_COM_CSTRORGNUM(DLVR_BRND_ORG_NUM) AS DLVR_CSTR_ORG_NUM
+	 		 , DLVR_ORG_NUM												/* 배송조직번호 */
+	 		 , DBO.FNC_COM_ORGNM(DLVR_ORG_NUM) AS DLVR_ORG_NM			/* 배송조직명 */
+	 		 , ACPTR_NM													/* 인수자명 */
+	 		 , ITM_CD													/*등록구분*//* 품목코드 */
+	 		 , DBO.FNC_STO_ITMNM(ITM_CD) AS ITM_NM 						/* 품목명칭 */
+	 		 , CGO_ITM_NM												/*[STYLE/품목]*//* 화물명칭 */
+	 		 , CGO_ITM_CATE_NM											/*[비고]*//* 화물상세구분 */
+	 		 , TRNSMTR_NM												/* 발신자명 */
+	 		 , CASE WHEN RPR_YN = 'Y' THEN 'Y' ELSE 'N' END AS RPR_YN	/* 수선여부 */
+
+			 , CGO_ITM_LOT1_NM	 /*[칼라]*/
+			 , CGO_ITM_LOT2_NM	 /*[사이즈]*/
+			 , 1 CGO_ITM_QTY		 /*[수량]*/
+
+	 		 , PU_BRND_ORG_DEPT_NM  /*[발신부서]*/
+	 		 , DLVR_BRND_ORG_DEPT_NM/*[수신부서]*/
+	 		 , CASE WHEN RPR_YN = 'Y' THEN DLVR_BRND_ORG_NUM ELSE '' END AS_BRND_ORG_NUM
+		  FROM TB_WBL_RT_WBL_MST_HST
+	     WHERE 1=1
+	       AND DLVR_BRND_ORG_NUM <![CDATA[<>]]> ''--IS NOT NULL
+	     <if test='PU_BRND_NUM != null and !PU_BRND_NUM.equals("")'>
+		   AND PU_BRND_NUM = #{PU_BRND_NUM}
+		   AND DLVR_BRND_NUM = #{PU_BRND_NUM}
+		 </if>
+	     <if test='PU_BRND_ORG_NUM != null and !PU_BRND_ORG_NUM.equals("")'>
+		   AND PU_BRND_ORG_NUM = #{PU_BRND_ORG_NUM}
+		 </if>
+	     <if test='OPRT_DT != null and !OPRT_DT.equals("")'>
+		   AND OPRT_DT = #{OPRT_DT}
+		 </if>
+		 <if test='RT_NUM != null and !RT_NUM.equals("")'>
+		   AND RT_NUM = #{RT_NUM}
+		 </if>
+		   AND RGST_EMP_NUM = #{SES_EMP_NUM}
+		   AND DLT_YN = 'N'		
+		ORDER BY RT_NUM
+    </select>
+
+	<!-- RT Report 조회 -->
+    <select id="selectReport" parameterType="java.util.HashMap" resultMap="RtRgstVO">
+    	<!-- C0420001:RT라벨 -->
+    	<if test='RT_WBL_CATE == "C0420001" or "C0420001".equals(RT_WBL_CATE)'>
+    	SELECT RT_NUM																/* RT번호 */
+	 		 , PU_BRND_NUM															/* 발신고객 */
+	 		 , DBO.FNC_SAL_BRNDNM(PU_BRND_NUM) AS PU_BRND_NM						/* 발신고객명*/
+	 		 , DBO.FNC_COM_ORGCD(PU_BRND_ORG_NUM) AS PU_BRND_ORG_CD					/* 발신지점코드*/
+	 		 , PU_BRND_ORG_NUM														/* 발신지점*/
+	 		 , DBO.FNC_COM_ORGNM(PU_BRND_ORG_NUM) AS PU_BRND_ORG_NM					/* 발신지점명 */
+	 		 , PU_ORG_NUM															/* 집하조직번호 */
+	 		 , DBO.FNC_COM_ORGNM(PU_ORG_NUM) AS PU_ORG_NM							/* 집하조직명 */
+	 		 , DBO.FNC_COM_ORGCD(DLVR_BRND_ORG_NUM) AS DLVR_BRND_ORG_CD				/* 수신지점코드 */
+	 		 , DLVR_BRND_ORG_NUM													/* 수신지점 */
+	 		 , DBO.FNC_COM_ORGNM(DLVR_BRND_ORG_NUM) AS DLVR_BRND_ORG_NM				/* 수신지점명*/
+	 		 , DLVR_ORG_NUM															/* 배송조직번호 */
+	 		 , DBO.FNC_COM_ORGNM(DLVR_ORG_NUM) AS DLVR_ORG_NM						/* 배송조직명 */
+	 		 , DBO.FNC_CTG_BRNDORG_LCT(DLVR_BRND_NUM, DLVR_BRND_ORG_NUM) AS LCTN	/* 로케이션 */
+		  FROM TB_WBL_RT_WBL_MST
+	     WHERE DLT_YN = 'N'
+	       AND RT_NUM IN
+			<foreach collection="RT_NUM_List" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+
+		<!-- C0420002:이랜드RT라벨 -->
+		<!-- C0420003:삼성생명서비스/현대자동차 문서집중국 라벨 -->
+		<!-- C0420005:코웨이문서라벨 -->
+		<if test='RT_WBL_CATE == "C0420002" or "C0420002".equals(RT_WBL_CATE) or RT_WBL_CATE == "C0420003" or "C0420003".equals(RT_WBL_CATE) or RT_WBL_CATE == "C0420005" or "C0420005".equals(RT_WBL_CATE)'>
+			SELECT  A.RT_NUM /* RT번호 */
+			       ,A.OPRT_DT /* 운영일자 */
+			       ,A.RGST_RT_KEY_NUM /* 등록송장키번호 */
+			       ,A.RT_CATE_CD /* RT구분코드 */
+			       ,A.RT_TRANS_STTS /* RT운송상태 */
+			       ,DBO.FNC_COM_CDNM(A.RT_TRANS_STTS) AS RT_TRANS_STTS_NM /* RT운송상태명 */
+			       ,A.PU_DT /* 집하일자 */
+			       ,A.CGO_ITM_NM /* 화물품목명칭 */
+			       ,A.CGO_ITM_CATE_NM /* 화물품목구분명칭 */
+			       ,A.PU_BRND_NUM /* 발신고객번호 */
+			       ,DBO.FNC_SAL_BRNDNM(A.PU_BRND_NUM) AS PU_BRND_NM /* 발신고객명 */
+			       ,DBO.FNC_COM_ORGCD(A.PU_BRND_ORG_NUM) AS PU_BRND_ORG_CD /* 발신매장코드 */
+			       ,A.PU_BRND_ORG_NUM /* 발신매장번호 */
+			       ,DBO.FNC_COM_ORGNM(A.PU_BRND_ORG_NUM) AS PU_BRND_ORG_NM /* 발신매장명 */
+			       ,A.PU_BRND_ORG_DEPT_NM /* 발신매장부서명 */
+			       ,A.TRNSMTR_NM /* 발신자명 */
+			       ,A.DLVR_BRND_NUM /* 수신고객번호 */
+			       ,DBO.FNC_SAL_BRNDNM(A.DLVR_BRND_NUM) AS DLVR_BRND_NM /* 수신고객명 */
+			       ,DBO.FNC_COM_ORGCD(A.DLVR_BRND_ORG_NUM) AS DLVR_BRND_ORG_CD /* 수신매장코드 */
+			       ,A.DLVR_BRND_ORG_NUM /* 수신매장번호 */
+			       ,DBO.FNC_COM_ORGNM(A.DLVR_BRND_ORG_NUM) AS DLVR_BRND_ORG_NM /* 수신매장명 */
+			       ,A.DLVR_BRND_ORG_DEPT_NM /* 수신매장부서명 */
+			       ,A.RCVR_NM /* 수신인명 */
+			       ,DBO.FNC_COM_ORGCD(DBO.FNC_COM_ORGPCHCTCNUM(A.DLVR_BRND_ORG_NUM)) AS DLVR_ORG_CD /* 배송영업소코드 */
+			       ,DBO.FNC_COM_ORGNM(DBO.FNC_COM_ORGPCHCTCNUM(A.DLVR_BRND_ORG_NUM)) AS DLVR_ORG_NM /* 배송영업소명 */
+			       ,(SELECT Z.LCTN_CD
+			           FROM TB_CTG_TML_BRND_ORG_LCT Z
+			          WHERE Z.BRND_NUM = A.PU_BRND_NUM
+			            AND Z.ORG_NUM = A.DLVR_BRND_ORG_NUM
+			            AND Z.OPRT_ORG_NUM IN (SELECT W.ORG_NUM
+			                                     FROM TB_COM_ORG W
+			                                    WHERE W.DLT_YN = 'N'
+			                                      AND W.BRND_NUM = '0000'
+			                                  )
+			        ) AS BOX_LOC /* 박스로케이션 */
+			       ,A.PRNT_YN /* 프린트여부 */
+			  FROM  TB_WBL_RT_WBL_MST A /* RT송장마스터 */
+			 WHERE  A.DLT_YN = 'N' /* 삭제여부 */
+			   AND  A.RT_NUM IN
+			<foreach collection="RT_NUM_List" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			 ORDER BY A.RT_NUM /* RT번호 */
+		</if>
+
+		<!-- C0420004:AS라벨 -->
+		<if test='RT_WBL_CATE == "C0420004" or "C0420004".equals(RT_WBL_CATE)'>
+
+		</if>
+    </select>
+
+	<!-- RT 데이터 등록 -->
+    <insert id="insertRt" parameterType="com.shl.app.cus.rtf.model.RtRgstVO">
+		INSERT
+		  INTO TB_WBL_RT_WBL_MST		/* RT송장마스터 */
+			  (RT_NUM					/* RT번호 */
+		     , RGST_RT_KEY_NUM			/* 발행키번호 */
+		     , RT_CATE_CD				/* RT구분코드-C0410002(의류)_현재 사용하지 않는 컬럼(윤성식확인) */
+		     , OPRT_DT					/* 등록일자 */
+		     , RT_TRANS_STTS			/* RT운송상태 */
+
+		     , PU_DT					/* RT등록일*/
+		     , PU_BRND_NUM				/* 발신고객 */
+		     , PU_BRND_ORG_NUM			/* 발신지점*/
+		     , PU_BRND_ORG_DEPT_NM		/* 발신부서*/
+		     , DLVR_BRND_NUM			/* 수신고객*/
+		     , DLVR_BRND_ORG_NUM		/* 수신지점 */
+		     , DLVR_BRND_ORG_NM			/* 수신지점명 */
+		     , DLVR_BRND_ORG_DEPT_NM	/* 수신부서*/
+		     , PRNT_YN					/* 발행여부 */
+
+
+		     , RPR_YN					/* 수선여부 */
+
+		     , RGST_EMP_NUM				/* 등록자 */
+		     , RGST_DTIM				/* 등록일시 */
+
+		     , ITM_CD					/* 등록구분 *//* 품목코드 */
+		     , CGO_ITM_NM				/* 화물명칭 *//* 화물명칭 */
+		     , CGO_ITM_CATE_NM			/* 화물상세구분 *//* 화물상세구분 */
+		     , CGO_ITM_LOT1_NM	 	/*[칼라]*/
+			 , CGO_ITM_LOT2_NM	 	/*[사이즈]*/
+			 , CGO_ITM_QTY		 	/*[수량]*/
+			 , RGST_CATE_KND		/*물류_고객_수기입력 구분*/
+		     )
+		VALUES (#{RT_NUM}
+		      , #{RGST_RT_KEY_NUM}
+		      , 'C0410002'		/* RT운송장_현재 사용하지 않는 컬럼(윤성식확인) */
+		      , CONVERT(CHAR(8), GETDATE(), 112)
+		      , 'C0890000'			/* RT상태코드(C0890000:RT가등록) */
+
+		      , CONVERT(CHAR(8), GETDATE(), 112)
+		      , #{PU_BRND_NUM}
+		      , #{PU_BRND_ORG_NUM}
+		      , #{PU_BRND_ORG_DEPT_NM}		/* 발신부서*/
+		      , #{DLVR_BRND_NUM}
+		      , #{DLVR_BRND_ORG_NUM}
+		      , [dbo].FNC_COM_ORGNM( #{DLVR_BRND_ORG_NUM} )			/* 수신지점명 */
+		      , #{DLVR_BRND_ORG_DEPT_NM}	/* 수신부서*/
+		      , #{PRNT_YN}
+
+		      , #{RPR_YN}
+
+		      , #{RGST_EMP_NUM}
+		      , SYSDATETIME()
+
+		      , #{ITM_CD}
+		      , #{CGO_ITM_NM}
+		      , #{CGO_ITM_CATE_NM}
+		      , #{CGO_ITM_LOT1_NM}	 	/*[칼라]*/
+			  , #{CGO_ITM_LOT2_NM}	 	/*[사이즈]*/
+			  , #{CGO_ITM_QTY}		 	/*[수량]*/
+			  , #{RGST_CATE_KND}	 	/*[등록구분종류]*/
+		      )
+    </insert>
+
+	<!-- RT 데이터 수정 -->
+    <update id="updateRt" parameterType="com.shl.app.cus.rtf.model.RtRgstVO">
+		UPDATE TB_WBL_RT_WBL_MST
+		   SET
+		       PU_BRND_NUM			= #{PU_BRND_NUM}
+		   	 , PU_BRND_ORG_NUM		= #{PU_BRND_ORG_NUM}
+		   	 , PU_BRND_ORG_DEPT_NM  = #{PU_BRND_ORG_DEPT_NM}	/*[발신부서]*/
+		   	 , DLVR_BRND_NUM		= #{DLVR_BRND_NUM}
+		   	 , DLVR_BRND_ORG_NUM	= #{DLVR_BRND_ORG_NUM}
+		   	 , DLVR_BRND_ORG_NM		= [dbo].FNC_COM_ORGNM( #{DLVR_BRND_ORG_NUM} )		/* 수신지점명 */
+	 		 , DLVR_BRND_ORG_DEPT_NM= #{DLVR_BRND_ORG_DEPT_NM}	/*[수신부서]*/
+		   	 , RGST_RT_KEY_NUM		= #{RGST_RT_KEY_NUM}
+		   	 , PRNT_YN				= #{PRNT_YN}
+		   	 , RPR_YN				= #{RPR_YN}
+
+			<if test='RT_TRANS_STTS != null and !RT_TRANS_STTS.equals("")'>
+		   	 , RT_TRANS_STTS		= #{RT_TRANS_STTS}
+		   	</if>
+		   	 , ITM_CD				= #{ITM_CD}					/* 등록구분 *//* 품목코드 */
+		     , CGO_ITM_NM			= #{CGO_ITM_NM}				/* 화물명칭 *//* 화물명칭 */
+		     , CGO_ITM_CATE_NM		= #{CGO_ITM_CATE_NM}		/* 화물상세구분 *//* 화물상세구분 */
+		     , CGO_ITM_LOT1_NM	 	= #{CGO_ITM_LOT1_NM}		/*[칼라]*/
+			 , CGO_ITM_LOT2_NM	 	= #{CGO_ITM_LOT2_NM}		/*[사이즈]*/
+			 , CGO_ITM_QTY		 	= #{CGO_ITM_QTY}			/*[수량]*/
+
+		     , CORCT_DTIM 			= SYSDATETIME()
+		     , CORCT_EMP_NUM		= #{CORCT_EMP_NUM}
+		 WHERE RT_NUM 				= #{RT_NUM}
+    </update>
+
+	<!-- RT 데이터 삭제 (삭제여부를 'Y'로 update)-->
+    <update id="deleteRt" parameterType="com.shl.app.cus.rtf.model.RtRgstVO">
+		UPDATE TB_WBL_RT_WBL_MST
+		   SET DLT_YN 			= 'Y'
+		     , DLT_DTIM			= SYSDATETIME()
+		     , CORCT_DTIM 		= SYSDATETIME()
+		     , CORCT_EMP_NUM	= #{CORCT_EMP_NUM}
+		 WHERE RT_NUM 			= #{RT_NUM}
+    </update>
+    
+    <resultMap id="RtNumStrBsInfoVO" type="com.shl.app.cus.rtf.model.RtRgstVO">
+		<result property="BRND_NUM"					column="BRND_NUM" />
+		<result property="ORG_CATE" 				column="ORG_CATE" />
+		<result property="RT_PREFIX" 				column="RT_PREFIX" />
+		<result property="SEQ_NM" 					column="SEQ_NM" />
+		<result property="SEQ_SZ" 					column="SEQ_SZ" />
+		<result property="SEQ_FMT" 					column="SEQ_FMT" />
+		<result property="FRM_CHR" 					column="FRM_CHR" />
+		<result property="MAXVALUE" 				column="MAXVALUE" />
+	</resultMap>
+
+    <!-- 해당 고객의 RT번호 발본 구조 정보 조회 -->
+    <select id="selectRtNumStrBsInfo" parameterType="java.util.HashMap" resultMap="RtNumStrBsInfoVO">
+		SELECT  BRND_NUM
+		       ,ORG_CATE
+		       ,RT_PREFIX
+		       ,SEQ_NM
+		       ,SEQ_SZ
+		       ,SEQ_FMT
+		       ,FRM_CHR
+		       ,REPLICATE('9', SEQ_SZ) AS MAXVALUE
+		  FROM  TB_WBL_PLCT_RT_STR_BS
+		 WHERE  (BRND_NUM = #{PU_BRND_NUM} AND RPR_YN = (CASE WHEN #{RPR_YN} = '1' OR #{RPR_YN} = 'Y' THEN 'Y' ELSE 'N' END))
+		    OR  (BRND_NUM = (SELECT REPZNT_CSTR_CD
+		                       FROM TB_SAL_BRND
+		                      WHERE BRND_NUM = #{PU_BRND_NUM}))
+    </select>
+
+    <!-- object명 조회 -->
+    <select id="selectObjectNm" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT NAME
+		  FROM SYS.objects
+		 WHERE TYPE = 'SO'
+		   AND NAME = #{value}
+    </select>
+
+    <!-- 시퀀스 object 생성 -->
+    <insert id="createSeqObject" parameterType="java.util.HashMap">
+		CREATE SEQUENCE ${SEQ_NM} AS BIGINT
+		START WITH ${FRM_CHR}
+		INCREMENT BY 1
+		MINVALUE ${FRM_CHR}
+		MAXVALUE ${MAXVALUE}
+		NO CYCLE
+    </insert>
+
+    <!-- 신규 RT번호 생성 -->
+    <select id="selectNewRtNum" parameterType="java.util.HashMap" resultType="java.lang.String">
+		SELECT  RT_PREFIX +
+		        ISNULL(BRND_CD, '') +
+		        CASE WHEN SEQ_NM = 'CSTR_ORG_NUM'
+		             THEN (SELECT ISNULL(CSTR_ORG_NUM, ORG_CD)
+		                     FROM TB_COM_ORG
+		                    WHERE ORG_NUM = #{PU_BRND_ORG_NUM})
+		             ELSE ''
+		        END +
+		        FORMAT(NEXT VALUE FOR ${SEQ_NM}, SEQ_FMT)
+		  FROM  TB_WBL_PLCT_RT_STR_BS
+		 WHERE  (BRND_NUM = #{PU_BRND_NUM} AND RPR_YN = (CASE WHEN #{RPR_YN} = '1' OR #{RPR_YN} = 'Y' THEN 'Y' ELSE 'N' END))
+		    OR  (BRND_NUM = (SELECT REPZNT_CSTR_CD
+		                       FROM TB_SAL_BRND
+		                      WHERE BRND_NUM = #{PU_BRND_NUM}))
+    </select>
+    
+</mapper>
+
+
